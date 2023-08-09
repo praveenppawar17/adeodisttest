@@ -17,8 +17,8 @@ export const createFeedsController = async (req, res) => {
   try {
     let feedsResponse = await createFeedsService(req.body);
     return res
-      .status(200)
-      .json({ isSuccess: true, statusCode: 200, feedsResponse });
+      .status(201)
+      .json({ isSuccess: true, statusCode: 201, feedsResponse });
   } catch (error) {
     return res.json({ feedsError: error });
   }
@@ -28,35 +28,43 @@ export const getAllFeedsController = async (req, res) => {
   try {
     let feedsResponse = await getAllFeedsService();
     return res
-      .status(201)
+      .status(200)
       .json({ isSuccess: true, statusCode: 200, feedsResponse });
   } catch (error) {
     return res.status(500).json({ feedsError: error });
   }
 };
 
+
 export const updateFeedsController = async (req, res) => {
   try {
-    let updateDetails = {
+    const updateDetails = {
       id: req.params.id,
       name: req.body.name,
       description: req.body.description,
       url: req.body.url,
     };
-    let feedsResponse = await updateFeedsService(updateDetails);
-    if (feedsResponse.rowCount === 1) {
-      return res
-        .status(201)
-        .json({ isSuccess: true, statusCode: 200, message: UPDATE_SUCESS });
+
+    const feedsResponse = await updateFeedsService(updateDetails);
+    console.log('fedds.. re.. ', feedsResponse)
+    if (feedsResponse.isSuccess) {
+      return res.status(200).json({
+        isSuccess: true,
+        statusCode: 200,
+        message: UPDATE_SUCCESS,
+      });
     } else {
-      return res
-        .status(500)
-        .json({ isSuccess: true, statusCode: 500, message: UPDATE_FAILED });
+      return res.status(404).json({
+        isSuccess: false,
+        statusCode: 404,
+        message: 'feed is not found',
+      });
     }
   } catch (error) {
-    return res.status(500).json({ feedsError: error });
+    return res.status(500).json({ isSuccess: false, error: UPDATE_FAILED });
   }
 };
+
 
 export const deleteFeedsController = async (req, res) => {
   try {
@@ -64,9 +72,9 @@ export const deleteFeedsController = async (req, res) => {
     let deleteResponse = await deleteFeedsService(req.params.id, userId);
     console.log("delete res in feeds controller.... ", deleteResponse);
     if (deleteResponse.rowCount === 1) {
-      return res.status(200).json({
+      return res.status(204).json({
         isSuccess: true,
-        statusCode: 200,
+        statusCode: 204,
         message: DELETE_SUCESS,
       });
     }

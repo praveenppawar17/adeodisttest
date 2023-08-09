@@ -14,7 +14,7 @@ import {
   INTERNAL_SERVER_ERROR,
 } from "../constants.js";
 
-const targetDir = "D:/nodejs/test/logs";
+const targetDir = "D:/nodejs/adeodisttest/logs";
 
 export const signupUserController = async (request, response) => {
   try {

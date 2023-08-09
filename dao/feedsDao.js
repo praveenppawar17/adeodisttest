@@ -57,25 +57,37 @@ export const getAllFeedsDao = async () => {
 
 export const updateFeedsDao = async ({ id, description, url, name }) => {
   try {
-    console.log("------- ", id, description, url, name);
+    console.log('------- ', id, description, url, name);
+
+    // Check if the feed with the given ID exists
+    const checkQuery = `
+      SELECT 1
+      FROM feeds
+      WHERE id = $1
+    `;
+    const checkValues = [id];
+    const checkResponse = await pool.query(checkQuery, checkValues);
+
+    if (checkResponse.rowCount === 0) {
+      console.log('Feed not found for update');
+      return 0; // Indicate that no rows were updated
+    }
+
+    // If the feed exists, proceed with the update
     const updateQuery = `
-            UPDATE feeds
-            SET description = $1, url = $2, name = $3
-            WHERE id = $4
-        `;
+      UPDATE feeds
+      SET description = $1, url = $2, name = $3
+      WHERE id = $4
+    `;
 
     const values = [description, url, name, id];
     const feedsResponse = await pool.query(updateQuery, values);
-    console.log("feeds ..... ", feedsResponse);
-    if (feedsResponse.rowCount === 1) {
-      return res
-        .status(201)
-        .json({ isSuccess: false, statusCode: 201, message: "Update Succ" });
-    }
-    return result.rowCount;
+    console.log('feeds ..... ', feedsResponse);
+
+    return feedsResponse.rowCount;
   } catch (error) {
-    console.log("Error updating feed:", error);
-    return res.status(500).json({ isSuccess: false, statusCode: 500, error });
+    console.log('Error updating feed:', error);
+    throw error;
   }
 };
 

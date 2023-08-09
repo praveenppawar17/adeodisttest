@@ -25,14 +25,19 @@ export const getAllFeedsService = async () => {
   }
 };
 
+// updateFeedsService.js
 export const updateFeedsService = async (updateDetails) => {
   try {
     const feedsResponse = await updateFeedsDao(updateDetails);
-    return feedsResponse;
+    if (feedsResponse === 0) {
+      return { isSuccess: false };
+    }
+    return { isSuccess: true };
   } catch (error) {
-    return error;
+    return { isSuccess: false, error: error.message };
   }
 };
+
 
 export const deleteFeedsService = async (feedId, userId) => {
   try {
